@@ -73,7 +73,7 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
               LIFE ARCHIVE
             </div>
             <p className="text-[10px] text-stone-500 tracking-wider">
-              YOUR LIFE, IN RECEIPTS • WEBRUSH 2026
+              YOUR LIFE, IN RECEIPTS • ARCHIVE RETROSPECTIVE
             </p>
             <p className="text-[10px] text-stone-500">
               TERMINAL: {breakdown.terminalId}

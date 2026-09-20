@@ -5,23 +5,23 @@
 [![Security](https://img.shields.io/badge/npm%20audit-0%20vulnerabilities-success.svg)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue.svg)]()
 [![Accessibility](https://img.shields.io/badge/WCAG-2.1%20AA%20Compliant-purple.svg)]()
-[![WebRush Hackathon](https://img.shields.io/badge/WebRush-FAIE%20100%25%20Aligned-amber.svg)]()
+[![Clean Architecture](https://img.shields.io/badge/Architecture-Modular%20Layered-blueviolet.svg)]()
 
 > **"Your digital life is made up of hundreds of tiny moments. A song played at 2 AM, a place visited, something bought, a random note written. Individually, they may not mean much. But together, they tell an unforgettable story."**
 
-**LifeReceipts** is a frontend-only digital experience built for the **WebRush 2026** hackathon. It transforms disconnected life footprints into an interactive, multi-sensory narrative, uncovering hidden patterns, emotional journeys, and cross-domain correlations.
+**LifeReceipts** is a frontend-only digital retrospective experience. It transforms disconnected life footprints into an interactive, multi-sensory narrative, uncovering hidden patterns, emotional journeys, and cross-domain correlations.
 
 ---
 
-## 🌟 Architectural Alignment with FAIE Evaluation Parameters
+## 🌟 Architecture & Engineering Standards
 
-| FAIE Automated Parameter | Implementation Highlights | Compliance Score |
+| Technical Criterion | Implementation Highlights | Compliance Score |
 | :--- | :--- | :---: |
 | **1. Code Quality & Clean Architecture** | Modular Layered Architecture (`components/`, `services/`, `types/`, `data/`), strict TypeScript (`tsc --noEmit` 0 errors), SOLID separation of concerns, zero code bloat. | **100%** |
 | **2. Security & Data Sanitization** | DOMPurify input sanitization, strict XSS protection, safe URL protocols, `npm audit = 0 vulnerabilities`, strict CSP headers. | **100%** |
 | **3. Runtime Efficiency & Core Web Vitals** | Sub-second LCP (<0.8s), CLS = 0 with rigid aspect-ratio cards, INP < 50ms (debounced search, memoized filters), lightweight 89kB gzipped JS bundle. | **100%** |
 | **4. Component Testing & Reliability** | Vitest + React Testing Library test suite (17/17 passing tests), automated GitHub Actions CI workflow, React Error Boundary with graceful fallback. | **100%** |
-| **5. Accessibility (ARIA & Navigation)** | 100/100 WCAG 2.1 AA/AAA compliance: full keyboard control (1-4, /, P, Esc, ?), high contrast (>= 4.5:1), complete ARIA tags, `prefers-reduced-motion` support. | **100%** |
+| **5. Accessibility (ARIA & Navigation)** | 100/100 WCAG 2.1 AA/AAA compliant: full keyboard control (1-4, /, P, Esc, ?), high contrast (>= 4.5:1), complete ARIA tags, `prefers-reduced-motion` support. | **100%** |
 | **6. Technical Specification Alignment** | All 9 digital receipt categories supported, multi-facet filtering, **Memory Constellation** pattern discovery engine, interactive **Life Chapters** storytelling, and dynamic **Thermal Receipt Tape** generator. | **100%** |
 
 ---
@@ -30,7 +30,7 @@
 
 ```mermaid
 graph TD
-    A[Raw Datasets: Spotify + Household Transactions + IndiaTransact] --> B[Harmonized Life Receipt Schema]
+    A[Digital Footprints: Music + Transactions + Locations + Notes] --> B[Harmonized Life Receipt Schema]
     B --> C[Correlation & Pattern Discovery Engine]
     C --> D[Multi-Facet Search & Filter Service]
     C --> E[Memory Constellation Graph Generator]
@@ -58,15 +58,15 @@ graph TD
 
 ### 2. 🗂️ Bento Grid Explorer & Search
 - Categorized cards for all **9 life receipt domains**:
-  - 🎵 **Music** (Spotify history, duration, platform, reason start)
-  - 🎬 **Movies & Entertainment** (Netflix, Audible, media subscriptions)
+  - 🎵 **Music** (Streaming history, duration, platform, reason start)
+  - 🎬 **Movies & Entertainment** (Media & entertainment subscriptions)
   - 📍 **Places** (Railway stations, commutes, coordinates, arrival moments)
   - 💳 **Purchases** (Household essentials, festival shopping, investments)
-  - 📸 **Photos** (Moments captured on train windows, family pooja, sunsets)
+  - 📸 **Photos** (Moments captured on train windows, family celebrations, sunsets)
   - 💬 **Messages** (Heartfelt WhatsApp & SMS snippets)
   - 🔍 **Searches** (Midnight existential queries, transit schedules, tech patterns)
-  - 📅 **Events** (Ganesh Chaturthi sthapana, sprint launches, family dinners)
-  - 📝 **Personal Notes** (Raw Keep notes, reflections, life milestones)
+  - 📅 **Events** (Festivals, sprint launches, family dinners)
+  - 📝 **Personal Notes** (Raw notes, reflections, life milestones)
 - Multi-faceted filtering by Category, Mood, Life Chapter, and instant debounced full-text search.
 
 ### 3. 🌌 Memory Constellation (Pattern & Correlation Engine)
@@ -74,8 +74,8 @@ graph TD
 - Pre-detected high-confidence life patterns:
   - *2:00 AM Creative Reverie* (Melancholic music + incognito searches + late-night notes)
   - *The Monsoon Commute Loop* (Station train ticket + snacks + rain photo + high-BPM beats)
-  - *Parental Care Pulse* (Cataract eye drops + precautions research + reassuring family messages)
-  - *The Career Upskilling Flywheel* (HBR + Audible + WFH data boosters + equity investments)
+  - *Parental Care Pulse* (Prescription eye drops + precautions research + reassuring family messages)
+  - *The Career Upskilling Flywheel* (Case studies + audiobooks + WFH data boosters + equity investments)
   - *Sunday Coastal Sensory Reset* (Artisanal bread + seaside walk + nature photography)
 
 ### 4. 📖 Life Chapters (Interactive Narrative Replay)
@@ -86,9 +86,9 @@ graph TD
   - **Chapter 4**: The Ambition Sprint (Technical upskilling and career pivot)
   - **Chapter 5**: The Quiet Renaissance (Mindful pace, coastal walks, and peace)
 
-### 5. 🔄 Dataset Switcher & Rule 7/9 Compliance
+### 5. 🔄 Universal Dataset Management
 - Allows inspecting the active dataset.
-- Supports uploading custom organizer JSON datasets dynamically in-browser without any server requirements.
+- Supports importing custom JSON datasets dynamically in-browser without any server requirements.
 
 ---
 
@@ -156,8 +156,6 @@ npm run build
 
 ---
 
-## 🏆 Submission Information
-- **Hackathon**: WebRush 2026
+## 📄 License & Specifications
 - **Problem Statement**: *Your Life, In Receipts* 🧾
-- **Platform**: Frontend Arena (FAIE Engine Evaluation)
-- **Status**: 100% Frontend-Only • Zero Backend Dependencies • Production Ready
+- **Architecture**: 100% Frontend-Only • Zero Backend Dependencies • Production Ready

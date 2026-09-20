@@ -214,11 +214,11 @@ export function App() {
             <span className="font-bold text-slate-300 font-mono">Your Life, In Receipts</span>
             <span>•</span>
             <span className="text-amber-400 font-semibold flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> FAIE 100% Evaluation Ready
+              <Sparkles className="w-3 h-3" /> Digital Memory Architecture
             </span>
           </div>
           <p className="flex items-center justify-center gap-1 text-[11px]">
-            Engineered with <Heart className="w-3 h-3 text-rose-500 fill-rose-500 inline" /> for the WebRush Hackathon
+            Engineered with <Heart className="w-3 h-3 text-rose-500 fill-rose-500 inline" /> as a Digital Life Retrospective
           </p>
         </footer>
       </div>

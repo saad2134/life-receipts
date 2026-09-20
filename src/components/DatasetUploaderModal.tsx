@@ -93,7 +93,7 @@ export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
               Active Dataset
             </span>
             <p className="text-sm font-bold text-white mt-0.5">
-              WebRush Harmonized Life Archives
+              Harmonized Digital Life Archives
             </p>
             <p className="text-xs text-slate-400">
               {currentCount} moments across all 9 categories

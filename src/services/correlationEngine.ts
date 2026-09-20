@@ -181,7 +181,7 @@ export function compileReceiptTape(receipts: LifeReceipt[]): ReceiptTapeBreakdow
 
   return {
     merchantName: "LIFE CORP DIGITAL ARCHIVES",
-    terminalId: "TERM-2026-WEBRUSH-FAIE",
+    terminalId: "TERM-2026-ARCHIVE-01",
     dateStr: new Date().toLocaleDateString('en-GB', {
       day: '2-digit',
       month: 'short',

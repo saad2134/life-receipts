@@ -60,7 +60,7 @@ describe('Correlation Engine & Pattern Discovery (FAIE Parameters 1, 4 & 6)', ()
 
   it('compiles thermal receipt tape breakdown with tax and totals', () => {
     const tape = compileReceiptTape(INITIAL_LIFE_RECEIPTS);
-    expect(tape.terminalId).toContain('WEBRUSH-FAIE');
+    expect(tape.terminalId).toContain('TERM-2026-ARCHIVE');
     expect(tape.items.length).toBeGreaterThan(0);
     expect(tape.totalUnits).toBe(INITIAL_LIFE_RECEIPTS.length);
     expect(tape.barcodeValue).toBeDefined();
