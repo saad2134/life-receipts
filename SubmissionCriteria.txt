@@ -1,0 +1,33 @@
+Attempts Remaining
+3 / 3
+Current Score
+—
+Leaderboard Rank
+—
+Round Status
+Open
+Automated Evaluation Parameters
+Code Quality & Clean Architecture
+Security & Data Sanitization
+Runtime Efficiency & Core Web Vitals
+Component Testing & Reliability
+Accessibility (ARIA & Keyboard Navigation)
+Technical Specification Alignment
+Submit Project
+Provide your public GitHub repository and live deployment URL for automated evaluation.
+
+Problem Statement
+*
+
+Your Life, In Receipts 🧾
+Public GitHub Repository Link
+*
+0/1024
+https://github.com/username/project.git
+Deployed Live Link
+*
+0/1024
+https://your-app-deployed.vercel.app
+Describe changes/updates in this deployment version
+*
+0/1024

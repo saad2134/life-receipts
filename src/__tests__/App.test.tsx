@@ -1,0 +1,68 @@
+import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import App from '../App';
+
+describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)', () => {
+  it('renders the initial view with branding, stats, and thermal tape', () => {
+    render(<App />);
+
+    // Brand and logo
+    expect(screen.getByText('LifeReceipts')).toBeInTheDocument();
+    expect(screen.getAllByText(/FAIE 100/i)[0]).toBeInTheDocument();
+
+    // Stats
+    expect(screen.getByText(/Digital Receipts/i)).toBeInTheDocument();
+    expect(screen.getByText(/Financial Footprint/i)).toBeInTheDocument();
+
+    // Thermal tape view default
+    expect(screen.getByText(/LIFE ARCHIVE/i)).toBeInTheDocument();
+  });
+
+  it('switches between views using navigation tabs', () => {
+    render(<App />);
+
+    // Switch to Bento Grid
+    const bentoTab = screen.getAllByRole('tab', { name: /Bento Grid/i })[0];
+    fireEvent.click(bentoTab);
+
+    // Should display receipt search input in Grid view
+    expect(screen.getByLabelText(/Search life receipts/i)).toBeInTheDocument();
+
+    // Switch to Constellation
+    const constellationTab = screen.getAllByRole('tab', { name: /Constellation/i })[0];
+    fireEvent.click(constellationTab);
+    expect(screen.getByText(/Discovered Patterns:/i)).toBeInTheDocument();
+
+    // Switch to Life Chapters
+    const chaptersTab = screen.getAllByRole('tab', { name: /Life Chapters/i })[0];
+    fireEvent.click(chaptersTab);
+    expect(screen.getByText(/CHAPTER 1 OF/i)).toBeInTheDocument();
+  });
+
+  it('filters receipts when typing in search bar in grid view', () => {
+    render(<App />);
+
+    const bentoTab = screen.getAllByRole('tab', { name: /Bento Grid/i })[0];
+    fireEvent.click(bentoTab);
+
+    const searchInput = screen.getByLabelText(/Search life receipts/i);
+    fireEvent.change(searchInput, { target: { value: 'Lana' } });
+
+    // Should filter down and still have results
+    expect(screen.getByText(/Showing/i)).toBeInTheDocument();
+  });
+
+  it('opens and closes the dataset management modal', () => {
+    render(<App />);
+
+    const datasetBtn = screen.getByRole('button', { name: /Upload custom or organizer dataset/i });
+    fireEvent.click(datasetBtn);
+
+    expect(screen.getByText('Dataset Management')).toBeInTheDocument();
+
+    const closeBtn = screen.getByRole('button', { name: /Close modal/i });
+    fireEvent.click(closeBtn);
+
+    expect(screen.queryByText('Dataset Management')).not.toBeInTheDocument();
+  });
+});

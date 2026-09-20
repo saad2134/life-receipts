@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --color-receipt-paper: #FDFBF7;
+  --color-receipt-dark: #12151E;
+  --color-receipt-ink: #1C1917;
+  --color-receipt-muted: #78716C;
+  --color-receipt-accent: #F59E0B;
+}
+
+/* Custom Jagged Receipt Tear Effect */
+.receipt-tear-top {
+  background: radial-gradient(circle, transparent, transparent 4px, #FDFBF7 4px, #FDFBF7);
+  background-size: 12px 8px;
+  background-position: 0 0;
+  background-repeat: repeat-x;
+  height: 8px;
+  width: 100%;
+}
+
+.receipt-tear-bottom {
+  background: radial-gradient(circle, transparent, transparent 4px, #FDFBF7 4px, #FDFBF7);
+  background-size: 12px 8px;
+  background-position: 0 bottom;
+  background-repeat: repeat-x;
+  height: 8px;
+  width: 100%;
+}
+
+/* Authentic Monospace Thermal Receipt Texture */
+.receipt-paper {
+  background-color: #FDFBF7;
+  color: #1C1917;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  font-family: var(--font-mono);
+}
+
+/* High-Contrast Focus Visible Rings for Accessibility */
+*:focus-visible {
+  outline: 2px solid #F59E0B !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print Stylesheet for Receipt Printing */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .receipt-paper {
+    box-shadow: none !important;
+    border: 1px dashed #666 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* Custom Scrollbar for Smooth Receipt Scrolling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.6);
+}

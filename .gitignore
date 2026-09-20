@@ -1,0 +1,15 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vscode/
+.idea/
+.DS_Store
+*.tmp
+dataset/*.csv
+dataset/*.tsv
+dataset/*.xml
+dataset/*.db
+dataset/*.py
+*.crdownload
+*.zip

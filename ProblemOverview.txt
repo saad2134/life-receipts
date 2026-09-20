@@ -1,0 +1,157 @@
+Problem Statement
+Your Life, In Receipts
+The Concept
+
+Your digital life is made up of hundreds of tiny moments.
+
+A song you played at 2 AM.
+A place you visited.
+A photo you took.
+Something you bought.
+A movie you watched.
+A message you saved.
+A search you made.
+A random note you wrote.
+
+Individually, these moments may not mean much.
+
+But when you put them together, they tell a story.
+
+The Challenge
+
+Build a frontend-only digital experience that transforms a collection of fictional “life receipts” into a meaningful and interactive story.
+
+Every participant will receive the same dataset containing different types of digital-life activities:
+
+Music
+Movies & Entertainment
+Places
+Purchases
+Photos
+Messages
+Searches
+Events
+Personal Notes
+
+The dataset represents fragments of someone's digital life over a period of time.
+
+Your task is not simply to display these records.
+
+You must explore the data, identify meaningful connections, discover patterns, and turn those disconnected moments into a story that the user can understand and interact with.
+
+The Core Challenge
+
+Think about what could be hidden inside the data.
+
+What kind of person was the user during different periods?
+
+How did their interests and behaviour change over time?
+
+Which moments are connected?
+
+What recurring patterns can be found?
+
+Can unrelated-looking receipts reveal a bigger story when viewed together?
+
+Your experience should move beyond:
+
+Raw Data → Information
+
+and aim for:
+
+Raw Data → Insights → Connections → Story
+
+How you achieve this is entirely up to you.
+
+Don't Just Build a Timeline
+
+A simple chronological list of receipts is not enough.
+
+We don't want:
+
+January → February → March → April
+
+with a collection of cards underneath.
+
+Think about the relationships between different types of information.
+
+For example:
+
+Song → Location → Photo → Purchase → Event
+
+might appear to be five unrelated records.
+
+But together, they could represent one meaningful moment or chapter in someone's life.
+
+Your interface should make these connections discoverable, interactive, and meaningful.
+
+Minimum Requirements
+
+Your solution must provide:
+
+A way to explore the provided life receipts
+Meaningful filtering, searching, or navigation
+At least one meaningful mechanism for discovering relationships or patterns
+An interactive storytelling experience
+A clear visual representation of the user's digital journey
+Responsive design across different screen sizes
+
+These requirements define the minimum experience.
+
+How you solve the problem is completely up to you.
+
+Creative Direction
+
+Your solution could take the form of:
+
+Digital Scrapbook
+Interactive Timeline
+Life Map
+Data Story
+Personal Museum
+Interactive Journal
+Game-like Experience
+Data Visualization
+AI-inspired Interface
+Or something completely new
+
+These are only examples — you are not required to follow any of them.
+
+We want to see your interpretation of the problem.
+
+The Real Challenge
+
+You have a dataset full of disconnected moments.
+
+Your job is to give those moments meaning.
+
+Don't just show the user:
+
+“What happened?”
+
+Help them discover:
+
+“What does it all mean?”
+
+The strongest solutions will make the user curious enough to explore, connect the dots, and discover something they didn't notice at first glance.
+
+The Constraint
+
+You have exactly 6 hours to:
+
+Understand → Design → Build → Refine → Deploy
+
+Your solution must be created within the hackathon duration.
+
+This is a frontend-only challenge. You are free to use modern frontend frameworks, libraries, UI tools, and development tools of your choice.
+
+Backend implementation is not required and is not permitted.
+
+Your Mission
+
+One Dataset.
+Hundreds of Moments.
+Infinite Stories.
+Six Hours to Uncover One.
+
+What story will you uncover?

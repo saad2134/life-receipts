@@ -1,0 +1,17 @@
+Participation is strictly individual. Team participation is not allowed.
+WebRush is a fully online, 6-hour frontend-only hackathon.
+Participants must build their solution within the given 6-hour hackathon window.
+Only frontend technologies, frameworks, libraries, and development tools are allowed.
+Backend technologies, backend servers, databases, and server-side implementations are not allowed.
+All participants will receive the same problem statement and must build their solution according to the given challenge.
+Participants must use the dataset provided by the organizers for the challenge.
+Previously developed or pre-built projects cannot be submitted. The project must be created during the hackathon.
+Participants may use sample/mock data where required, but the final solution must remain frontend-only.
+The submitted project must be responsive and accessible through a working live deployment.
+A maximum of 3 submission attempts will be allowed for improving the project, subject to the submission window specified by the organizers.
+The FAIE Engine will evaluate submissions based on the predefined evaluation framework and technical criteria.
+Only valid submissions that meet the hackathon requirements will be considered for the final leaderboard.
+All participants must follow the official communication channels for important announcements and hackathon updates.
+The final leaderboard and results will be based on the valid evaluation scores recorded by the FAIE Engine.
+Submissions will be automatically evaluated using the FAIE (Frontend Arena Intelligence Engine).
+Participants must submit both a live deployment URL and GitHub repository before the submission deadline
