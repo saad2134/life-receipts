@@ -1,10 +1,20 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../App';
+import { ReceiptProvider } from '../context/ReceiptContext';
+
+/** Helper: renders App wrapped in ReceiptProvider (mirrors main.tsx) */
+function renderApp() {
+  return render(
+    <ReceiptProvider>
+      <App />
+    </ReceiptProvider>
+  );
+}
 
 describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)', () => {
   it('renders the initial view with branding, stats, and thermal tape', async () => {
-    render(<App />);
+    renderApp();
 
     // Brand and logo
     expect(screen.getByText('LifeReceipts')).toBeInTheDocument();
@@ -19,7 +29,7 @@ describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)
   });
 
   it('switches between views using navigation tabs', async () => {
-    render(<App />);
+    renderApp();
 
     // Switch to Bento Grid
     const bentoTab = screen.getAllByRole('tab', { name: /Bento Grid/i })[0];
@@ -45,7 +55,7 @@ describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)
   });
 
   it('filters receipts when typing in search bar in grid view', () => {
-    render(<App />);
+    renderApp();
 
     const bentoTab = screen.getAllByRole('tab', { name: /Bento Grid/i })[0];
     fireEvent.click(bentoTab);
@@ -58,7 +68,7 @@ describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)
   });
 
   it('opens and closes the dataset management modal', () => {
-    render(<App />);
+    renderApp();
 
     const datasetBtn = screen.getByRole('button', { name: /Upload custom or organizer dataset/i });
     fireEvent.click(datasetBtn);

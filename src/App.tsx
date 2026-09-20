@@ -1,13 +1,13 @@
-import { useState, useMemo, useEffect, useCallback, lazy, Suspense } from 'react';
-import { LifeReceipt, ViewMode } from './types/receipt';
-import {
-  INITIAL_LIFE_RECEIPTS,
-  calculateLifeStats,
-} from './data/lifeReceiptsData';
-import {
-  filterAndSortReceipts,
-} from './services/correlationEngine';
-import type { FilterOptions } from './types/filter';
+/**
+ * App.tsx — Root application shell.
+ *
+ * This component is a thin presentation shell that consumes all state
+ * and actions from the centralized ReceiptContext via the useReceipts() hook.
+ * It contains zero local state — all state management is delegated to
+ * the ReceiptProvider mounted in main.tsx.
+ */
+import { lazy, Suspense } from 'react';
+import { useReceipts } from './context/ReceiptContext';
 import { Navbar } from './components/Navbar';
 import { StatsBanner } from './components/StatsBanner';
 import { FilterBar } from './components/FilterBar';
@@ -18,7 +18,7 @@ import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sparkles, Heart } from 'lucide-react';
 
-// Code-split secondary views for runtime efficiency & bundle optimization
+/** Code-split secondary views for runtime efficiency & bundle optimization */
 const ReceiptTapeView = lazy(() =>
   import('./components/ReceiptTapeView').then((m) => ({ default: m.ReceiptTapeView }))
 );
@@ -32,6 +32,7 @@ const ConnectionDetectiveView = lazy(() =>
   import('./components/ConnectionDetectiveView').then((m) => ({ default: m.ConnectionDetectiveView }))
 );
 
+/** Suspense fallback skeleton shown while lazy views are loading */
 function ViewLoadingSkeleton() {
   return (
     <div
@@ -50,69 +51,34 @@ function ViewLoadingSkeleton() {
   );
 }
 
+/**
+ * Root application component.
+ * Consumes all state from ReceiptContext — contains zero local state.
+ */
 export function App() {
-  const [currentView, setCurrentView] = useState<ViewMode>('receipt-tape');
-  const [receipts, setReceipts] = useState<LifeReceipt[]>(INITIAL_LIFE_RECEIPTS);
-  const [selectedReceipt, setSelectedReceipt] = useState<LifeReceipt | null>(null);
-  const [highlightedThreadReceiptIds, setHighlightedThreadReceiptIds] = useState<Set<string>>(new Set());
-
-  const [isUploaderOpen, setIsUploaderOpen] = useState(false);
-  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
-
-  // Multi-facet filter state
-  const [filters, setFilters] = useState<FilterOptions>({
-    searchQuery: '',
-    category: 'all',
-    mood: 'all',
-    chapterId: 'all',
-    sortBy: 'date-desc',
-  });
-
-  // Derived life stats
-  const stats = useMemo(() => calculateLifeStats(receipts), [receipts]);
-
-  // Filtered and sorted receipts for explorer views
-  const filteredReceipts = useMemo(() => {
-    return filterAndSortReceipts(receipts, filters);
-  }, [receipts, filters]);
-
-  const handleFilterChange = useCallback((newFilters: Partial<FilterOptions>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  }, []);
-
-  // Trace thread action: highlights all connected receipts across the UI
-  const handleTraceThread = useCallback((targetReceipt: LifeReceipt) => {
-    const threadSet = new Set([targetReceipt.id, ...(targetReceipt.connectedReceiptIds || [])]);
-    setHighlightedThreadReceiptIds(threadSet);
-    setSelectedReceipt(targetReceipt);
-  }, []);
-
-  // Clickable tag filtering: sets search query to the selected tag
-  const handleFilterByTag = useCallback((tag: string) => {
-    setFilters((prev) => ({ ...prev, searchQuery: tag }));
-    setCurrentView('bento-grid');
-  }, []);
-
-  // Global Keyboard Navigation (1, 2, 3, 4, p, ?)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if inside text inputs
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement).tagName)) {
-        return;
-      }
-
-      if (e.key === '1') setCurrentView('receipt-tape');
-      if (e.key === '2') setCurrentView('bento-grid');
-      if (e.key === '3') setCurrentView('constellation');
-      if (e.key === '4') setCurrentView('chapters');
-      if (e.key === '5') setCurrentView('detective');
-      if (e.key.toLowerCase() === 'p') window.print();
-      if (e.key === '?') setIsShortcutsOpen((prev) => !prev);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  const {
+    receipts,
+    filteredReceipts,
+    stats,
+    currentView,
+    selectedReceipt,
+    highlightedThreadReceiptIds,
+    filters,
+    isUploaderOpen,
+    isShortcutsOpen,
+    setCurrentView,
+    setSelectedReceipt,
+    setReceipts,
+    setFilters,
+    resetFilters,
+    filterByTag,
+    traceThread,
+    openUploader,
+    closeUploader,
+    openShortcuts,
+    closeShortcuts,
+    resetDefaultDataset,
+  } = useReceipts();
 
   return (
     <ErrorBoundary>
@@ -121,8 +87,8 @@ export function App() {
         <Navbar
           currentView={currentView}
           onViewChange={setCurrentView}
-          onOpenUploader={() => setIsUploaderOpen(true)}
-          onOpenShortcuts={() => setIsShortcutsOpen(true)}
+          onOpenUploader={openUploader}
+          onOpenShortcuts={openShortcuts}
           onPrintReceipt={() => window.print()}
           totalReceipts={receipts.length}
         />
@@ -137,7 +103,7 @@ export function App() {
         {(currentView === 'bento-grid' || currentView === 'receipt-tape') && (
           <FilterBar
             filters={filters}
-            onFilterChange={handleFilterChange}
+            onFilterChange={setFilters}
             categoryCounts={stats.categoryCounts}
             totalResults={filteredReceipts.length}
           />
@@ -179,18 +145,7 @@ export function App() {
                       Try searching for another artist, location, or reset the filters.
                     </p>
                     <button
-                      onClick={() =>
-                        handleFilterChange({
-                          searchQuery: '',
-                          category: 'all',
-                          mood: 'all',
-                          chapterId: 'all',
-                          minAmount: undefined,
-                          maxAmount: undefined,
-                          startDate: undefined,
-                          endDate: undefined,
-                        })
-                      }
+                      onClick={resetFilters}
                       className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-colors cursor-pointer"
                     >
                       Clear All Filters
@@ -203,8 +158,8 @@ export function App() {
                         key={receipt.id}
                         receipt={receipt}
                         onSelectReceipt={setSelectedReceipt}
-                        onTraceThread={handleTraceThread}
-                        onFilterByTag={handleFilterByTag}
+                        onTraceThread={traceThread}
+                        onFilterByTag={filterByTag}
                         isHighlighted={highlightedThreadReceiptIds.has(receipt.id)}
                       />
                     ))}
@@ -269,25 +224,22 @@ export function App() {
           onSelectReceipt={setSelectedReceipt}
         />
 
-        {/* Modal: Dataset Switcher / Uploader (Rule 7 & 9 Compliance) */}
+        {/* Modal: Dataset Switcher / Uploader */}
         <DatasetUploaderModal
           isOpen={isUploaderOpen}
-          onClose={() => setIsUploaderOpen(false)}
+          onClose={closeUploader}
           onDatasetLoad={(loaded) => {
             setReceipts(loaded);
-            setIsUploaderOpen(false);
+            closeUploader();
           }}
-          onResetDefault={() => {
-            setReceipts(INITIAL_LIFE_RECEIPTS);
-            setIsUploaderOpen(false);
-          }}
+          onResetDefault={resetDefaultDataset}
           currentCount={receipts.length}
         />
 
         {/* Modal: Accessibility & Keyboard Shortcuts Guide */}
         <KeyboardShortcutsModal
           isOpen={isShortcutsOpen}
-          onClose={() => setIsShortcutsOpen(false)}
+          onClose={closeShortcuts}
         />
 
         {/* Accessible Footer */}
