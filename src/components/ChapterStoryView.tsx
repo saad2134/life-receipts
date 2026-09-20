@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { LifeReceipt } from '../types/receipt';
-import { INITIAL_CHAPTERS } from '../data/lifeReceiptsData';
+import { synthesizeDynamicChapters } from '../services/correlationEngine';
+import { useReceiptAudio } from '../hooks/useReceiptAudio';
 import {
   ChevronLeft,
   ChevronRight,
@@ -11,6 +12,7 @@ import {
   Play,
   Pause,
   MapPin,
+  Headphones,
 } from 'lucide-react';
 import { sanitizeText } from '../services/security';
 
@@ -24,26 +26,56 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
   onSelectReceipt,
 }) => {
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
-  const [isNarrating, setIsNarrating] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const chapters = useMemo(() => synthesizeDynamicChapters(receipts), [receipts]);
+  const chapter = chapters[activeChapterIndex] || chapters[0];
 
-  const chapter = INITIAL_CHAPTERS[activeChapterIndex] || INITIAL_CHAPTERS[0];
+  const {
+    isNarrating,
+    isAmbientOn,
+    isMuted,
+    playNarration,
+    stopNarration,
+    toggleAmbient,
+    toggleMute,
+  } = useReceiptAudio();
 
   const chapterReceipts = useMemo(() => {
+    if (!chapter) return [];
+    if (chapter.receiptIds && chapter.receiptIds.length > 0) {
+      const idSet = new Set(chapter.receiptIds);
+      return receipts.filter((r) => idSet.has(r.id));
+    }
     return receipts.filter((r) => r.chapterId === chapter.id);
-  }, [receipts, chapter.id]);
+  }, [receipts, chapter]);
 
   const handleNext = () => {
-    if (activeChapterIndex < INITIAL_CHAPTERS.length - 1) {
+    if (activeChapterIndex < chapters.length - 1) {
+      stopNarration();
       setActiveChapterIndex((prev) => prev + 1);
     }
   };
 
   const handlePrev = () => {
     if (activeChapterIndex > 0) {
+      stopNarration();
       setActiveChapterIndex((prev) => prev - 1);
     }
   };
+
+  const handleSelectChapter = (idx: number) => {
+    if (idx !== activeChapterIndex) {
+      stopNarration();
+      setActiveChapterIndex(idx);
+    }
+  };
+
+  if (!chapter) {
+    return (
+      <section className="max-w-6xl mx-auto px-4 py-12 text-center text-slate-400">
+        No chapter memories synthesized yet. Load life receipts to construct story chapters.
+      </section>
+    );
+  }
 
   return (
     <section
@@ -53,12 +85,12 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
       {/* Chapter Navigation Tabs */}
       <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 scrollbar-none">
         <div className="flex items-center gap-2">
-          {INITIAL_CHAPTERS.map((ch, idx) => {
+          {chapters.map((ch, idx) => {
             const isCurrent = idx === activeChapterIndex;
             return (
               <button
                 key={ch.id}
-                onClick={() => setActiveChapterIndex(idx)}
+                onClick={() => handleSelectChapter(idx)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
                   isCurrent
                     ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-lg shadow-amber-500/20'
@@ -72,22 +104,40 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
           })}
         </div>
 
-        {/* Narrative Player Controls */}
+        {/* Narrative & Multi-Sensory Audio Controls */}
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={() => setIsNarrating((prev) => !prev)}
-            aria-label={isNarrating ? 'Pause story narration' : 'Play story narration'}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs font-medium text-amber-400 hover:bg-slate-800 transition-colors cursor-pointer"
+            onClick={() => playNarration(chapter.narrative)}
+            aria-label={isNarrating ? 'Stop story narration' : 'Play spoken narration'}
+            title="Read chapter aloud with Web Speech API voice synthesis"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+              isNarrating
+                ? 'bg-amber-500 text-slate-950 font-bold border-amber-400 shadow-lg shadow-amber-500/20'
+                : 'bg-slate-900 border-slate-700/80 text-amber-400 hover:bg-slate-800'
+            }`}
           >
             {isNarrating ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{isNarrating ? 'Pause Audio' : 'Play Ambient'}</span>
+            <span className="hidden sm:inline">{isNarrating ? 'Stop Voice' : 'Play Narration'}</span>
           </button>
           <button
-            onClick={() => setIsMuted((prev) => !prev)}
-            aria-label={isMuted ? 'Unmute' : 'Mute'}
+            onClick={toggleAmbient}
+            aria-label={isAmbientOn ? 'Disable 432Hz ambient frequency' : 'Enable 432Hz ambient frequency'}
+            title="Toggle 432Hz natural meditation synthesizer"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+              isAmbientOn
+                ? 'bg-indigo-600/30 text-indigo-300 border-indigo-500/50'
+                : 'bg-slate-900 border-slate-700/80 text-slate-400 hover:text-white'
+            }`}
+          >
+            <Headphones className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{isAmbientOn ? '432Hz On' : 'Ambient'}</span>
+          </button>
+          <button
+            onClick={toggleMute}
+            aria-label={isMuted ? 'Unmute audio' : 'Mute audio'}
             className="p-2 rounded-xl bg-slate-900 border border-slate-700/80 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
-            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
@@ -104,7 +154,7 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-white/10 text-white border border-white/20">
               <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-              CHAPTER {chapter.number} OF {INITIAL_CHAPTERS.length}
+              CHAPTER {chapter.number} OF {chapters.length}
             </span>
             <span className="text-xs text-slate-400 font-mono">
               {chapter.timeRange}
@@ -157,7 +207,7 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
         </div>
       </div>
 
-      {/* Chapter Moments Carousel / Grid */}
+      {/* Chapter Moments Grid */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -177,7 +227,7 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
             </button>
             <button
               onClick={handleNext}
-              disabled={activeChapterIndex === INITIAL_CHAPTERS.length - 1}
+              disabled={activeChapterIndex === chapters.length - 1}
               aria-label="Next Chapter"
               className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 hover:text-white transition-colors cursor-pointer"
             >

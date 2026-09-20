@@ -1,6 +1,6 @@
 // Generated Life Receipts Dataset
 // Source: Synthesized from Daily Household Transactions.csv, spotify_history.csv, and IndiaTransactMultiFacet
-import { LifeReceipt, StoryChapter, DetectedPattern, LifeStats } from '../types/receipt';
+import { LifeReceipt, StoryChapter, DetectedPattern, LifeStats, MoodType } from '../types/receipt';
 
 export const INITIAL_CHAPTERS: StoryChapter[] = [
   {
@@ -1240,12 +1240,12 @@ export function calculateLifeStats(receipts: LifeReceipt[]): LifeStats {
   const formattedHr = `${maxHr.toString().padStart(2, '0')}:00`;
 
   // Find dominant mood
-  let domMood: any = 'contemplative';
+  let domMood: MoodType = 'contemplative';
   let maxMoodCount = 0;
   Object.entries(moodFrequency).forEach(([mood, count]) => {
     if (count > maxMoodCount) {
       maxMoodCount = count;
-      domMood = mood;
+      domMood = mood as MoodType;
     }
   });
 

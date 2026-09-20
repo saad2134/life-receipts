@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ReceiptCategory, MoodType } from '../types/receipt';
 import { FilterOptions } from '../services/correlationEngine';
+import { useDebounce } from '../hooks/useDebounce';
 import {
   Search,
   X,
@@ -14,6 +15,8 @@ import {
   Calendar,
   FileText,
   SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 interface FilterBarProps {
@@ -30,9 +33,24 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   totalResults,
 }) => {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const [localSearch, setLocalSearch] = useState(filters.searchQuery);
+  const debouncedSearch = useDebounce(localSearch, 200);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+  // Sync debounced search to filter state
+  useEffect(() => {
+    if (debouncedSearch !== filters.searchQuery) {
+      onFilterChange({ searchQuery: debouncedSearch });
+    }
+  }, [debouncedSearch, filters.searchQuery, onFilterChange]);
+
+  // Sync back if parent resets filters
+  useEffect(() => {
+    setLocalSearch(filters.searchQuery);
+  }, [filters.searchQuery]);
 
   // Global hotkey '/' to jump to search bar
-  React.useEffect(() => {
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === '/' && document.activeElement !== searchInputRef.current) {
         e.preventDefault();
@@ -61,6 +79,31 @@ export const FilterBar: React.FC<FilterBarProps> = ({
     { id: 'note', label: 'Personal Notes', icon: FileText, count: categoryCounts.note },
   ];
 
+  const hasActiveFilters = Boolean(
+    filters.searchQuery ||
+      filters.category !== 'all' ||
+      filters.mood !== 'all' ||
+      filters.chapterId !== 'all' ||
+      filters.minAmount !== undefined ||
+      filters.maxAmount !== undefined ||
+      filters.startDate ||
+      filters.endDate
+  );
+
+  const handleResetAll = () => {
+    setLocalSearch('');
+    onFilterChange({
+      searchQuery: '',
+      category: 'all',
+      mood: 'all',
+      chapterId: 'all',
+      minAmount: undefined,
+      maxAmount: undefined,
+      startDate: undefined,
+      endDate: undefined,
+    });
+  };
+
   return (
     <section
       aria-label="Receipt Search and Filters"
@@ -78,14 +121,17 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             id="receipt-search-input"
             ref={searchInputRef}
             type="text"
-            value={filters.searchQuery}
-            onChange={(e) => onFilterChange({ searchQuery: e.target.value })}
+            value={localSearch}
+            onChange={(e) => setLocalSearch(e.target.value)}
             placeholder="Search tracks, notes, places, tags... (Press '/' to focus)"
             className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-amber-400/80 focus:ring-1 focus:ring-amber-400/80 transition-all font-sans"
           />
-          {filters.searchQuery && (
+          {localSearch && (
             <button
-              onClick={() => onFilterChange({ searchQuery: '' })}
+              onClick={() => {
+                setLocalSearch('');
+                onFilterChange({ searchQuery: '' });
+              }}
               aria-label="Clear search input"
               className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white rounded-md cursor-pointer"
             >
@@ -94,7 +140,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           )}
         </div>
 
-        {/* Secondary controls: Mood, Chapter, and Sort dropdowns */}
+        {/* Secondary controls: Mood, Chapter, Sort dropdowns & Advanced Filters toggle */}
         <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
           {/* Mood Filter */}
           <div className="shrink-0">
@@ -129,11 +175,11 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               className="bg-slate-900 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-400 transition-all font-sans cursor-pointer"
             >
               <option value="all">All Chapters</option>
-              <option value="ch-1">Ch 1: The Midnight Frequencies</option>
-              <option value="ch-2">Ch 2: The Monsoon Commute</option>
-              <option value="ch-3">Ch 3: The Family Anchor</option>
-              <option value="ch-4">Ch 4: The Ambition Sprint</option>
-              <option value="ch-5">Ch 5: The Quiet Renaissance</option>
+              <option value="ch-1">Ch 1</option>
+              <option value="ch-2">Ch 2</option>
+              <option value="ch-3">Ch 3</option>
+              <option value="ch-4">Ch 4</option>
+              <option value="ch-5">Ch 5</option>
             </select>
           </div>
 
@@ -154,8 +200,89 @@ export const FilterBar: React.FC<FilterBarProps> = ({
               <option value="connections-desc">Most Connected</option>
             </select>
           </div>
+
+          {/* Toggle Advanced Filters (Amount & Date Range) */}
+          <button
+            onClick={() => setShowAdvancedFilters((prev) => !prev)}
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
+            title="Toggle Amount and Date Range Filters"
+          >
+            <span>Range</span>
+            {showAdvancedFilters ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
         </div>
       </div>
+
+      {/* Advanced Filters Panel (Amount & Date Ranges) */}
+      {showAdvancedFilters && (
+        <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 animate-in fade-in duration-150 text-xs">
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+              Min Amount (₹)
+            </label>
+            <input
+              type="number"
+              placeholder="0"
+              value={filters.minAmount !== undefined ? filters.minAmount : ''}
+              onChange={(e) =>
+                onFilterChange({
+                  minAmount: e.target.value !== '' ? parseFloat(e.target.value) : undefined,
+                })
+              }
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400 font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+              Max Amount (₹)
+            </label>
+            <input
+              type="number"
+              placeholder="10000"
+              value={filters.maxAmount !== undefined ? filters.maxAmount : ''}
+              onChange={(e) =>
+                onFilterChange({
+                  maxAmount: e.target.value !== '' ? parseFloat(e.target.value) : undefined,
+                })
+              }
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400 font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+              Start Date
+            </label>
+            <input
+              type="date"
+              value={filters.startDate || ''}
+              onChange={(e) =>
+                onFilterChange({
+                  startDate: e.target.value || undefined,
+                })
+              }
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400 font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+              End Date
+            </label>
+            <input
+              type="date"
+              value={filters.endDate || ''}
+              onChange={(e) =>
+                onFilterChange({
+                  endDate: e.target.value || undefined,
+                })
+              }
+              className="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-amber-400 font-mono"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Category Pills horizontal scroller */}
       <div
@@ -193,24 +320,14 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         })}
       </div>
 
-      {/* Result feedback bar */}
+      {/* Result feedback bar with aria-live="polite" */}
       <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-        <span>
+        <span aria-live="polite" aria-atomic="true">
           Showing <strong className="text-white">{totalResults}</strong> moments found
         </span>
-        {(filters.searchQuery ||
-          filters.category !== 'all' ||
-          filters.mood !== 'all' ||
-          filters.chapterId !== 'all') && (
+        {hasActiveFilters && (
           <button
-            onClick={() =>
-              onFilterChange({
-                searchQuery: '',
-                category: 'all',
-                mood: 'all',
-                chapterId: 'all',
-              })
-            }
+            onClick={handleResetAll}
             className="text-amber-400 hover:underline cursor-pointer"
           >
             Reset Filters

@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { sanitizeText, isSafeUrl, validateDatasetStructure } from '../services/security';
+import {
+  sanitizeText,
+  isSafeUrl,
+  validateDatasetStructure,
+  hasPrototypePollution,
+  sanitizeObject,
+} from '../services/security';
 
 describe('Security & Data Sanitization Service (FAIE Parameter 2)', () => {
   it('strips malicious <script> tags and prevents XSS', () => {
@@ -42,5 +48,30 @@ describe('Security & Data Sanitization Service (FAIE Parameter 2)', () => {
     expect(validateDatasetStructure(invalidData)).toBe(false);
     expect(validateDatasetStructure([])).toBe(false);
     expect(validateDatasetStructure('not an array')).toBe(false);
+  });
+
+  it('detects and blocks prototype pollution payload keys (__proto__, constructor, prototype)', () => {
+    const pollutedJson = JSON.parse('{"__proto__": {"admin": true}, "title": "Innocent"}');
+    expect(hasPrototypePollution(pollutedJson)).toBe(true);
+
+    const nestedPolluted = [{ metadata: JSON.parse('{"constructor": {"evil": true}}') }];
+    expect(hasPrototypePollution(nestedPolluted)).toBe(true);
+
+    const safeObj = [{ id: '1', category: 'purchase', title: 'Tea', timestamp: '2023-01-01' }];
+    expect(hasPrototypePollution(safeObj)).toBe(false);
+  });
+
+  it('rejects datasets containing prototype pollution in validateDatasetStructure', () => {
+    const pollutedDataset = [
+      JSON.parse('{"id": "1", "category": "music", "title": "Song", "timestamp": "2023-01-01", "__proto__": {"polluted": true}}')
+    ];
+    expect(validateDatasetStructure(pollutedDataset)).toBe(false);
+  });
+
+  it('deep-sanitizes objects by removing dangerous prototype keys', () => {
+    const rawObj = JSON.parse('{"title": "Safe", "__proto__": {"bad": true}}');
+    const sanitized = sanitizeObject(rawObj);
+    expect(sanitized.title).toBe('Safe');
+    expect(hasPrototypePollution(sanitized)).toBe(false);
   });
 });

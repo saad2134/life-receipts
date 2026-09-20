@@ -134,15 +134,23 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Mobile View Switcher Tabs (Horizontal scroll bar) */}
-      <div className="md:hidden flex items-center justify-around border-t border-slate-800/80 bg-slate-950 px-2 py-1.5">
+      <nav
+        role="tablist"
+        aria-label="Mobile Navigation"
+        className="md:hidden flex items-center justify-around border-t border-slate-800/80 bg-slate-950 px-2 py-1.5"
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
           return (
             <button
               key={item.id}
+              role="tab"
+              id={`mobile-tab-${item.id}`}
+              aria-selected={isActive}
+              aria-controls={`panel-${item.id}`}
               onClick={() => onViewChange(item.id)}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors ${
+              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors cursor-pointer ${
                 isActive ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -151,7 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           );
         })}
-      </div>
+      </nav>
     </header>
   );
 };

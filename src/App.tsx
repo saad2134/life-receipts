@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, lazy, Suspense } from 'react';
 import { LifeReceipt, ViewMode } from './types/receipt';
 import {
   INITIAL_LIFE_RECEIPTS,
@@ -12,14 +12,40 @@ import { Navbar } from './components/Navbar';
 import { StatsBanner } from './components/StatsBanner';
 import { FilterBar } from './components/FilterBar';
 import { ReceiptCard } from './components/ReceiptCard';
-import { ReceiptTapeView } from './components/ReceiptTapeView';
-import { ConstellationView } from './components/ConstellationView';
-import { ChapterStoryView } from './components/ChapterStoryView';
 import { ReceiptDetailModal } from './components/ReceiptDetailModal';
 import { DatasetUploaderModal } from './components/DatasetUploaderModal';
 import { KeyboardShortcutsModal } from './components/KeyboardShortcutsModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Sparkles, Heart } from 'lucide-react';
+
+// Code-split secondary views for runtime efficiency & bundle optimization
+const ReceiptTapeView = lazy(() =>
+  import('./components/ReceiptTapeView').then((m) => ({ default: m.ReceiptTapeView }))
+);
+const ConstellationView = lazy(() =>
+  import('./components/ConstellationView').then((m) => ({ default: m.ConstellationView }))
+);
+const ChapterStoryView = lazy(() =>
+  import('./components/ChapterStoryView').then((m) => ({ default: m.ChapterStoryView }))
+);
+
+function ViewLoadingSkeleton() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="max-w-4xl mx-auto px-4 py-20 flex flex-col items-center justify-center space-y-4 text-center animate-pulse"
+    >
+      <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-amber-500/30 flex items-center justify-center text-amber-400">
+        <Sparkles className="w-6 h-6 animate-spin" />
+      </div>
+      <p className="text-sm font-semibold text-slate-300">
+        Illuminating digital retrospective view...
+      </p>
+      <span className="sr-only">Loading view content</span>
+    </div>
+  );
+}
 
 export function App() {
   const [currentView, setCurrentView] = useState<ViewMode>('receipt-tape');
@@ -109,74 +135,104 @@ export function App() {
 
         {/* Main Content Area with Semantic Landmark */}
         <main id="main-content" className="flex-1 pb-16">
-          {/* VIEW 1: Authentic Thermal Receipt Tape */}
-          {currentView === 'receipt-tape' && (
-            <ReceiptTapeView
-              receipts={filteredReceipts}
-              onSelectReceipt={setSelectedReceipt}
-            />
-          )}
+          <Suspense fallback={<ViewLoadingSkeleton />}>
+            {/* VIEW 1: Authentic Thermal Receipt Tape */}
+            {currentView === 'receipt-tape' && (
+              <section
+                id="panel-receipt-tape"
+                role="tabpanel"
+                aria-labelledby="tab-receipt-tape"
+                tabIndex={0}
+              >
+                <ReceiptTapeView
+                  receipts={filteredReceipts}
+                  onSelectReceipt={setSelectedReceipt}
+                />
+              </section>
+            )}
 
-          {/* VIEW 2: Bento Grid Cards Explorer */}
-          {currentView === 'bento-grid' && (
-            <section
-              aria-label="Bento Grid Receipt Explorer"
-              className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
-            >
-              {filteredReceipts.length === 0 ? (
-                <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-slate-800 space-y-3">
-                  <p className="text-base font-bold text-slate-300">
-                    No life receipts matched your current filters.
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    Try searching for another artist, location, or reset the filters.
-                  </p>
-                  <button
-                    onClick={() =>
-                      handleFilterChange({
-                        searchQuery: '',
-                        category: 'all',
-                        mood: 'all',
-                        chapterId: 'all',
-                      })
-                    }
-                    className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-colors cursor-pointer"
-                  >
-                    Clear All Filters
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredReceipts.map((receipt) => (
-                    <ReceiptCard
-                      key={receipt.id}
-                      receipt={receipt}
-                      onSelectReceipt={setSelectedReceipt}
-                      onTraceThread={handleTraceThread}
-                      isHighlighted={highlightedThreadReceiptIds.has(receipt.id)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
-          )}
+            {/* VIEW 2: Bento Grid Cards Explorer */}
+            {currentView === 'bento-grid' && (
+              <section
+                id="panel-bento-grid"
+                role="tabpanel"
+                aria-labelledby="tab-bento-grid"
+                tabIndex={0}
+                className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+              >
+                {filteredReceipts.length === 0 ? (
+                  <div className="text-center py-20 bg-slate-900/40 rounded-3xl border border-slate-800 space-y-3">
+                    <p className="text-base font-bold text-slate-300">
+                      No life receipts matched your current filters.
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Try searching for another artist, location, or reset the filters.
+                    </p>
+                    <button
+                      onClick={() =>
+                        handleFilterChange({
+                          searchQuery: '',
+                          category: 'all',
+                          mood: 'all',
+                          chapterId: 'all',
+                          minAmount: undefined,
+                          maxAmount: undefined,
+                          startDate: undefined,
+                          endDate: undefined,
+                        })
+                      }
+                      className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs hover:bg-amber-400 transition-colors cursor-pointer"
+                    >
+                      Clear All Filters
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {filteredReceipts.map((receipt) => (
+                      <ReceiptCard
+                        key={receipt.id}
+                        receipt={receipt}
+                        onSelectReceipt={setSelectedReceipt}
+                        onTraceThread={handleTraceThread}
+                        isHighlighted={highlightedThreadReceiptIds.has(receipt.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
 
-          {/* VIEW 3: Memory Constellation Relationship Graph */}
-          {currentView === 'constellation' && (
-            <ConstellationView
-              receipts={receipts}
-              onSelectReceipt={setSelectedReceipt}
-              selectedReceipt={selectedReceipt}
-            />
-          )}
+            {/* VIEW 3: Memory Constellation Relationship Graph */}
+            {currentView === 'constellation' && (
+              <section
+                id="panel-constellation"
+                role="tabpanel"
+                aria-labelledby="tab-constellation"
+                tabIndex={0}
+              >
+                <ConstellationView
+                  receipts={receipts}
+                  onSelectReceipt={setSelectedReceipt}
+                  selectedReceipt={selectedReceipt}
+                />
+              </section>
+            )}
 
-          {/* VIEW 4: Interactive Life Chapters Storytelling */}
-          {currentView === 'chapters' && (
-            <ChapterStoryView
-              receipts={receipts}
-              onSelectReceipt={setSelectedReceipt}
-            />
-          )}
+            {/* VIEW 4: Interactive Life Chapters Storytelling */}
+            {currentView === 'chapters' && (
+              <section
+                id="panel-chapters"
+                role="tabpanel"
+                aria-labelledby="tab-chapters"
+                tabIndex={0}
+              >
+                <ChapterStoryView
+                  receipts={receipts}
+                  onSelectReceipt={setSelectedReceipt}
+                />
+              </section>
+            )}
+          </Suspense>
         </main>
 
         {/* Modal: Receipt Deep-Dive Inspection */}

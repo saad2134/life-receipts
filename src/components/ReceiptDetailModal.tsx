@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { sanitizeText } from '../services/security';
 
+import { useFocusTrap } from '../hooks/useFocusTrap';
+
 interface ReceiptDetailModalProps {
   receipt: LifeReceipt | null;
   onClose: () => void;
@@ -24,14 +26,7 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
   allReceipts,
   onSelectReceipt,
 }) => {
-  // Close on Escape key
-  React.useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  const containerRef = useFocusTrap<HTMLDivElement>(Boolean(receipt), onClose);
 
   if (!receipt) return null;
 
@@ -51,7 +46,10 @@ export const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
       <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
 
       {/* Modal Dialog Content */}
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto space-y-6">
+      <div
+        ref={containerRef}
+        className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto space-y-6"
+      >
         {/* Header with Category & Close button */}
         <div className="flex items-start justify-between gap-4">
           <div>

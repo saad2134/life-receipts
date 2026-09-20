@@ -1,6 +1,7 @@
 import React from 'react';
 import { LifeReceipt } from '../types/receipt';
 import { compileReceiptTape } from '../services/correlationEngine';
+import { useReceiptAudio } from '../hooks/useReceiptAudio';
 import confetti from 'canvas-confetti';
 import { Printer, Sparkles, Scissors } from 'lucide-react';
 
@@ -15,9 +16,11 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
 }) => {
   const [isTorn, setIsTorn] = React.useState(false);
   const breakdown = React.useMemo(() => compileReceiptTape(receipts), [receipts]);
+  const { triggerTearSound } = useReceiptAudio();
 
   const handleTear = () => {
     setIsTorn(true);
+    triggerTearSound();
     confetti({
       particleCount: 80,
       spread: 60,

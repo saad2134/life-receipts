@@ -1,7 +1,25 @@
 import React from 'react';
 import { LifeReceipt } from '../types/receipt';
-import { X, Upload, CheckCircle2, AlertCircle, RefreshCw, FileText } from 'lucide-react';
-import { validateDatasetStructure } from '../services/security';
+import {
+  X,
+  Upload,
+  CheckCircle2,
+  AlertCircle,
+  RefreshCw,
+  FileText,
+  Music,
+  ShoppingBag,
+  CreditCard,
+  Layers,
+} from 'lucide-react';
+import { parseUploadedDataset, autoLinkTemporalReceipts } from '../services/datasetParser';
+import {
+  SAMPLE_SPOTIFY_RECEIPTS,
+  SAMPLE_HOUSEHOLD_RECEIPTS,
+  SAMPLE_INDIA_TRANSACT_RECEIPTS,
+} from '../data/sampleOrganizerDatasets';
+import { INITIAL_LIFE_RECEIPTS } from '../data/lifeReceiptsData';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface DatasetUploaderModalProps {
   isOpen: boolean;
@@ -10,6 +28,8 @@ interface DatasetUploaderModalProps {
   onResetDefault: () => void;
   currentCount: number;
 }
+
+const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB safety limit
 
 export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
   isOpen,
@@ -22,6 +42,9 @@ export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
   const [successMsg, setSuccessMsg] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Accessible Focus Trap inside modal
+  const containerRef = useFocusTrap<HTMLDivElement>(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,26 +53,52 @@ export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Safety check: 25MB file size constraint
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      setErrorMsg('File size exceeds the 25MB safety limit. Please upload a smaller dataset.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
         const text = event.target?.result as string;
-        const parsed = JSON.parse(text);
+        const parsedReceipts = parseUploadedDataset(text, file.name);
 
-        if (!validateDatasetStructure(parsed)) {
-          setErrorMsg(
-            'Invalid dataset structure. Expected an array of receipts with id, category, title, and timestamp.'
-          );
+        if (parsedReceipts.length === 0) {
+          setErrorMsg('No valid life receipts could be parsed from this file.');
           return;
         }
 
-        onDatasetLoad(parsed as LifeReceipt[]);
-        setSuccessMsg(`Successfully imported ${parsed.length} custom life receipts!`);
+        onDatasetLoad(parsedReceipts);
+        setSuccessMsg(`Successfully imported ${parsedReceipts.length} life moments from ${file.name}!`);
       } catch (err) {
-        setErrorMsg('Failed to parse file. Please upload a valid JSON dataset file.');
+        const message = err instanceof Error ? err.message : 'Failed to parse file.';
+        setErrorMsg(message);
       }
     };
+    reader.onerror = () => {
+      setErrorMsg('Error reading file from disk.');
+    };
     reader.readAsText(file);
+  };
+
+  const handlePresetLoad = (type: 'default' | 'spotify' | 'household' | 'india') => {
+    setErrorMsg(null);
+    if (type === 'default') {
+      onResetDefault();
+      setSuccessMsg(`Loaded default harmonized life archive (${INITIAL_LIFE_RECEIPTS.length} moments across 9 domains).`);
+    } else if (type === 'spotify') {
+      onDatasetLoad(autoLinkTemporalReceipts(SAMPLE_SPOTIFY_RECEIPTS));
+      setSuccessMsg(`Loaded Spotify Streaming History preset (${SAMPLE_SPOTIFY_RECEIPTS.length} moments).`);
+    } else if (type === 'household') {
+      onDatasetLoad(autoLinkTemporalReceipts(SAMPLE_HOUSEHOLD_RECEIPTS));
+      setSuccessMsg(`Loaded Daily Household Transactions preset (${SAMPLE_HOUSEHOLD_RECEIPTS.length} moments).`);
+    } else if (type === 'india') {
+      onDatasetLoad(autoLinkTemporalReceipts(SAMPLE_INDIA_TRANSACT_RECEIPTS));
+      setSuccessMsg(`Loaded India Transact Multi-Facet preset (${SAMPLE_INDIA_TRANSACT_RECEIPTS.length} moments).`);
+    }
   };
 
   return (
@@ -61,7 +110,10 @@ export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
     >
       <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
 
-      <div className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 space-y-5">
+      <div
+        ref={containerRef}
+        className="relative w-full max-w-xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 space-y-5 max-h-[90vh] overflow-y-auto"
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/30">
@@ -72,7 +124,7 @@ export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
                 Dataset Management
               </h2>
               <p className="text-xs text-slate-400">
-                Rule 7 & 9 Compliance: Load or switch life datasets
+                FAIE Parameter 6 Compliance: Load custom files or official hackathon datasets
               </p>
             </div>
           </div>
@@ -90,49 +142,110 @@ export const DatasetUploaderModal: React.FC<DatasetUploaderModalProps> = ({
         <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
           <div>
             <span className="text-[10px] uppercase font-bold text-slate-400">
-              Active Dataset
+              Active Archive State
             </span>
             <p className="text-sm font-bold text-white mt-0.5">
-              Harmonized Digital Life Archives
+              Active Digital Retrospective
             </p>
             <p className="text-xs text-slate-400">
-              {currentCount} moments across all 9 categories
+              {currentCount} life moments loaded and correlated
             </p>
           </div>
           <button
-            onClick={() => {
-              onResetDefault();
-              setSuccessMsg('Reset to official default dataset successfully.');
-              setErrorMsg(null);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 text-xs text-slate-300 hover:text-white transition-colors cursor-pointer"
+            onClick={() => handlePresetLoad('default')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 text-xs text-slate-300 hover:text-white transition-colors cursor-pointer border border-slate-700/60"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>Reset Default</span>
           </button>
         </div>
 
-        {/* Custom JSON Uploader */}
+        {/* 1-Click Preset Quick Switchers */}
+        <div className="space-y-2">
+          <label className="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-1">
+            <Layers className="w-3.5 h-3.5 text-cyan-400" />
+            1-Click Dataset Quick Switchers (Evaluator Ready)
+          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => handlePresetLoad('default')}
+              className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-amber-500/50 text-left transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center gap-2 text-xs font-bold text-white group-hover:text-amber-300">
+                <Layers className="w-4 h-4 text-amber-400" />
+                <span>Default Harmonized Archive</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Full 9 domains with story chapters & constellation
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handlePresetLoad('spotify')}
+              className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 text-left transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center gap-2 text-xs font-bold text-white group-hover:text-indigo-300">
+                <Music className="w-4 h-4 text-indigo-400" />
+                <span>Spotify Streaming History</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                From spotify_history.csv with late-night tracks
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handlePresetLoad('household')}
+              className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-emerald-500/50 text-left transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center gap-2 text-xs font-bold text-white group-hover:text-emerald-300">
+                <ShoppingBag className="w-4 h-4 text-emerald-400" />
+                <span>Daily Household Transactions</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                From Daily Household Transactions.csv (INR)
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handlePresetLoad('india')}
+              className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 text-left transition-colors cursor-pointer group"
+            >
+              <div className="flex items-center gap-2 text-xs font-bold text-white group-hover:text-cyan-300">
+                <CreditCard className="w-4 h-4 text-cyan-400" />
+                <span>India Transact Multi-Facet</span>
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                From IndiaTransactMultiFacet2024.json
+              </p>
+            </button>
+          </div>
+        </div>
+
+        {/* Custom File Uploader */}
         <div className="space-y-2">
           <label className="text-xs font-bold text-slate-300 uppercase tracking-wide flex items-center gap-1">
             <FileText className="w-3.5 h-3.5 text-amber-400" />
-            Import Custom JSON Dataset
+            Upload Custom File (JSON / CSV)
           </label>
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-700 hover:border-amber-400/60 rounded-2xl p-6 text-center cursor-pointer transition-colors bg-slate-950/50"
+            className="border-2 border-dashed border-slate-700 hover:border-amber-400/60 rounded-2xl p-5 text-center cursor-pointer transition-colors bg-slate-950/50"
           >
-            <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+            <Upload className="w-7 h-7 text-slate-400 mx-auto mb-1.5" />
             <p className="text-xs font-semibold text-slate-200">
-              Click to select or drop a JSON dataset file
+              Click to browse or drop any JSON or CSV dataset file
             </p>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Supports LifeReceipt[] array format
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              Auto-detects Spotify CSV, Household CSV, India Transact JSON, and LifeReceipt[] (Max 25MB)
             </p>
             <input
               ref={fileInputRef}
               type="file"
-              accept=".json"
+              accept=".json,.csv,.tsv,.txt"
               onChange={handleFileUpload}
               className="hidden"
             />

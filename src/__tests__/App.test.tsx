@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from '../App';
 
 describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)', () => {
-  it('renders the initial view with branding, stats, and thermal tape', () => {
+  it('renders the initial view with branding, stats, and thermal tape', async () => {
     render(<App />);
 
     // Brand and logo
@@ -14,11 +14,11 @@ describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)
     expect(screen.getByText(/Digital Receipts/i)).toBeInTheDocument();
     expect(screen.getByText(/Financial Footprint/i)).toBeInTheDocument();
 
-    // Thermal tape view default
-    expect(screen.getByText(/LIFE ARCHIVE/i)).toBeInTheDocument();
+    // Thermal tape view default (lazy loaded)
+    expect(await screen.findByText(/LIFE ARCHIVE/i)).toBeInTheDocument();
   });
 
-  it('switches between views using navigation tabs', () => {
+  it('switches between views using navigation tabs', async () => {
     render(<App />);
 
     // Switch to Bento Grid
@@ -26,17 +26,17 @@ describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)
     fireEvent.click(bentoTab);
 
     // Should display receipt search input in Grid view
-    expect(screen.getByLabelText(/Search life receipts/i)).toBeInTheDocument();
+    expect(await screen.findByLabelText(/Search life receipts/i)).toBeInTheDocument();
 
-    // Switch to Constellation
+    // Switch to Constellation (lazy loaded)
     const constellationTab = screen.getAllByRole('tab', { name: /Constellation/i })[0];
     fireEvent.click(constellationTab);
-    expect(screen.getByText(/Discovered Patterns:/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Discovered Patterns:/i)).toBeInTheDocument();
 
-    // Switch to Life Chapters
+    // Switch to Life Chapters (lazy loaded)
     const chaptersTab = screen.getAllByRole('tab', { name: /Life Chapters/i })[0];
     fireEvent.click(chaptersTab);
-    expect(screen.getByText(/CHAPTER 1 OF/i)).toBeInTheDocument();
+    expect(await screen.findByText(/CHAPTER 1 OF/i)).toBeInTheDocument();
   });
 
   it('filters receipts when typing in search bar in grid view', () => {
