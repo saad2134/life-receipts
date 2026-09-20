@@ -75,13 +75,13 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
             <div className="text-xl font-black tracking-widest uppercase text-stone-900">
               LIFE ARCHIVE
             </div>
-            <p className="text-[10px] text-stone-500 tracking-wider">
+            <p className="text-[10px] text-stone-700 tracking-wider">
               YOUR LIFE, IN RECEIPTS • ARCHIVE RETROSPECTIVE
             </p>
-            <p className="text-[10px] text-stone-500">
+            <p className="text-[10px] text-stone-700">
               TERMINAL: {breakdown.terminalId}
             </p>
-            <p className="text-[10px] text-stone-500">
+            <p className="text-[10px] text-stone-700">
               DATE: {breakdown.dateStr}
             </p>
           </div>
@@ -114,7 +114,7 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
                   <p className="text-[11px] font-bold text-stone-900 truncate group-hover:text-amber-700">
                     {r.title}
                   </p>
-                  <p className="text-[9px] text-stone-500 truncate">
+                  <p className="text-[9px] text-stone-700 truncate">
                     {r.displayDate}
                   </p>
                 </div>
@@ -168,7 +168,7 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
             <p className="text-[9px] tracking-widest text-stone-600">
               {breakdown.barcodeValue}
             </p>
-            <div className="pt-2 flex items-center justify-center gap-1 text-[10px] text-stone-500">
+            <div className="pt-2 flex items-center justify-center gap-1 text-[10px] text-stone-700">
               <Sparkles className="w-3 h-3 text-amber-600" />
               <span>THANK YOU FOR LIVING THESE MOMENTS</span>
             </div>

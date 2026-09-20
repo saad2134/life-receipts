@@ -45,9 +45,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-white font-mono">
+              <h1 className="font-extrabold text-base sm:text-lg tracking-tight text-white font-mono">
                 LifeReceipts
-              </span>
+              </h1>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30">
                 <Sparkles className="w-2.5 h-2.5" />
                 ARCHIVE EDITION
@@ -126,7 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onOpenShortcuts}
             aria-label="View keyboard shortcuts"
             title="Keyboard Shortcuts (?)"
-            className="p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors cursor-pointer"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-colors cursor-pointer"
           >
             <Keyboard className="w-4 h-4" />
           </button>
@@ -150,7 +150,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               aria-selected={isActive}
               aria-controls={`panel-${item.id}`}
               onClick={() => onViewChange(item.id)}
-              className={`flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors cursor-pointer ${
+              className={`flex flex-col items-center justify-center min-h-[44px] gap-0.5 py-1 px-3 rounded-lg text-[11px] font-medium transition-colors cursor-pointer ${
                 isActive ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
               }`}
             >

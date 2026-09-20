@@ -165,7 +165,7 @@ export function App() {
                     <p className="text-base font-bold text-slate-300">
                       No life receipts matched your current filters.
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-400">
                       Try searching for another artist, location, or reset the filters.
                     </p>
                     <button
@@ -265,7 +265,7 @@ export function App() {
         />
 
         {/* Accessible Footer */}
-        <footer className="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 space-y-2 no-print">
+        <footer className="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-400 space-y-2 no-print">
           <div className="flex items-center justify-center gap-2">
             <span className="font-bold text-slate-300 font-mono">Your Life, In Receipts</span>
             <span>•</span>

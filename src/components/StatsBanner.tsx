@@ -64,8 +64,17 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({ stats, onOpenConstella
           return (
             <div
               key={idx}
+              role={item.action ? 'button' : undefined}
+              tabIndex={item.action ? 0 : undefined}
+              aria-label={item.action ? `${item.label}: ${item.value}, ${item.actionText || 'click to view'}` : undefined}
+              onKeyDown={(e) => {
+                if (item.action && (e.key === 'Enter' || e.key === ' ')) {
+                  e.preventDefault();
+                  item.action();
+                }
+              }}
               className={`p-3 sm:p-4 rounded-xl border backdrop-blur-md bg-slate-900/60 hover:bg-slate-900/90 transition-all flex flex-col justify-between ${
-                item.action ? 'cursor-pointer hover:border-cyan-500/50 group' : 'border-slate-800/80'
+                item.action ? 'cursor-pointer hover:border-cyan-500/50 group focus:outline-none focus:ring-2 focus:ring-cyan-400' : 'border-slate-800/80'
               }`}
               onClick={item.action}
             >

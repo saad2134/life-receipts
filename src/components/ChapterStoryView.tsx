@@ -221,7 +221,7 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
               onClick={handlePrev}
               disabled={activeChapterIndex === 0}
               aria-label="Previous Chapter"
-              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 hover:text-white transition-colors cursor-pointer"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 hover:text-white transition-colors cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -229,7 +229,7 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
               onClick={handleNext}
               disabled={activeChapterIndex === chapters.length - 1}
               aria-label="Next Chapter"
-              className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 hover:text-white transition-colors cursor-pointer"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 disabled:opacity-30 hover:text-white transition-colors cursor-pointer"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

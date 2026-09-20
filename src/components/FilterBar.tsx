@@ -204,6 +204,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           {/* Toggle Advanced Filters (Amount & Date Range) */}
           <button
             onClick={() => setShowAdvancedFilters((prev) => !prev)}
+            aria-expanded={showAdvancedFilters}
+            aria-controls="advanced-filters-panel"
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700/80 text-xs text-slate-300 hover:text-white transition-colors cursor-pointer shrink-0"
             title="Toggle Amount and Date Range Filters"
           >
@@ -215,7 +217,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
 
       {/* Advanced Filters Panel (Amount & Date Ranges) */}
       {showAdvancedFilters && (
-        <div className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 animate-in fade-in duration-150 text-xs">
+        <div id="advanced-filters-panel" className="bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 animate-in fade-in duration-150 text-xs">
           <div>
             <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
               Min Amount (₹)

@@ -233,7 +233,7 @@ export const ConstellationView: React.FC<ConstellationViewProps> = ({
             <span className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-bold">
               {selectedReceipt ? 'Single Moment Anchor' : `Pattern: ${currentPattern?.category.toUpperCase() || 'SYNTHESIS'}`}
             </span>
-            <span className="text-slate-500">•</span>
+            <span className="text-slate-400">•</span>
             <span className="text-[11px] text-slate-400">
               {activeReceiptIds.size} connected life moments illuminated
             </span>
@@ -266,7 +266,7 @@ export const ConstellationView: React.FC<ConstellationViewProps> = ({
             disabled={zoomLevel >= 2}
             aria-label="Zoom in constellation graph"
             title="Zoom In"
-            className="p-1.5 text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
@@ -275,7 +275,7 @@ export const ConstellationView: React.FC<ConstellationViewProps> = ({
             disabled={zoomLevel <= 0.75}
             aria-label="Zoom out constellation graph"
             title="Zoom Out"
-            className="p-1.5 text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            className="min-w-[36px] min-h-[36px] flex items-center justify-center p-1.5 text-slate-300 hover:text-white disabled:opacity-30 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <ZoomOut className="w-3.5 h-3.5" />
           </button>
@@ -283,7 +283,7 @@ export const ConstellationView: React.FC<ConstellationViewProps> = ({
             onClick={handleResetZoom}
             aria-label="Reset zoom to 100%"
             title="Reset Zoom (100%)"
-            className="px-2 py-0.5 text-[10px] font-mono text-cyan-300 font-bold hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="min-w-[36px] min-h-[36px] flex items-center justify-center px-2 py-0.5 text-[10px] font-mono text-cyan-300 font-bold hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
           >
             {Math.round(zoomLevel * 100)}%
           </button>
@@ -294,7 +294,7 @@ export const ConstellationView: React.FC<ConstellationViewProps> = ({
             <p className="text-slate-400 text-sm font-semibold">
               No constellation moments to display.
             </p>
-            <p className="text-slate-500 text-xs">
+            <p className="text-slate-400 text-xs">
               Load or select receipts to illuminate the relationship graph.
             </p>
           </div>
