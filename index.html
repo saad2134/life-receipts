@@ -8,7 +8,8 @@
     <meta name="color-scheme" content="dark" />
     <link rel="canonical" href="https://your-life-in-receipts.vercel.app/" />
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧾</text></svg>" />
-    
+    <link rel="manifest" href="/manifest.json" />
+
     <!-- SEO & Metadata -->
     <title>LifeReceipts — Your Life, In Receipts</title>
     <meta name="description" content="An interactive digital experience that transforms digital-life receipts (music, places, photos, purchases, searches, notes) into meaningful stories and discoverable patterns." />
@@ -19,16 +20,18 @@
     <meta property="og:title" content="LifeReceipts — Your Life, In Receipts" />
     <meta property="og:description" content="Discover the hidden stories, late-night patterns, and emotional journeys woven inside everyday digital footprints." />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://your-life-in-receipts.vercel.app/" />
 
     <!-- Security & Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self'; media-src 'self' data: blob:;" />
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <!-- Typography (Google Fonts) -->
+    <!-- Typography (Google Fonts — Non-Blocking Preconnect + swap) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" /></noscript>
   </head>
   <body class="bg-slate-950 text-slate-100 antialiased selection:bg-amber-400/30 selection:text-amber-200">
     <!-- Accessibility Skip Link -->

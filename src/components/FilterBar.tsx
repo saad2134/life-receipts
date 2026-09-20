@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ReceiptCategory, MoodType } from '../types/receipt';
-import { FilterOptions } from '../services/correlationEngine';
+import { FilterOptions } from '../types/filter';
 import { useDebounce } from '../hooks/useDebounce';
 import {
   Search,

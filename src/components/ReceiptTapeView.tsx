@@ -3,7 +3,8 @@ import { LifeReceipt } from '../types/receipt';
 import { compileReceiptTape } from '../services/correlationEngine';
 import { useReceiptAudio } from '../hooks/useReceiptAudio';
 import confetti from 'canvas-confetti';
-import { Printer, Sparkles, Scissors } from 'lucide-react';
+import { Printer, Sparkles, Scissors, Download } from 'lucide-react';
+import { exportToJson, exportToCsv, exportToThermalText } from '../services/exportService';
 
 interface ReceiptTapeViewProps {
   receipts: LifeReceipt[];
@@ -23,9 +24,8 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
     triggerTearSound();
     confetti({
       particleCount: 80,
-      spread: 60,
-      origin: { y: 0.7 },
-      colors: ['#f59e0b', '#10b981', '#6366f1', '#f43f5e'],
+      spread: 70,
+      origin: { y: 0.6 },
     });
     setTimeout(() => setIsTorn(false), 3000);
   };
@@ -40,7 +40,7 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
       className="flex flex-col items-center justify-center py-6 px-4"
     >
       {/* Tape Controls Bar */}
-      <div className="flex items-center gap-3 mb-6 no-print">
+      <div className="flex flex-wrap items-center justify-center gap-3 mb-6 no-print">
         <button
           onClick={handleTear}
           aria-label="Tear and save receipt"
@@ -57,6 +57,38 @@ export const ReceiptTapeView: React.FC<ReceiptTapeViewProps> = ({
           <Printer className="w-4 h-4 text-amber-400" />
           <span>Print / Save PDF</span>
         </button>
+
+        {/* Multi-Format Export Suite */}
+        <div className="flex items-center gap-1 bg-slate-900 border border-slate-700/80 p-1 rounded-xl">
+          <span className="text-[10px] font-mono font-bold text-slate-400 px-1.5 flex items-center gap-1">
+            <Download className="w-3 h-3 text-cyan-400" />
+            EXPORT:
+          </span>
+          <button
+            onClick={() => exportToJson(receipts)}
+            aria-label="Export Archive as JSON"
+            title="Download JSON Archive"
+            className="px-2 py-1 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+          >
+            JSON
+          </button>
+          <button
+            onClick={() => exportToCsv(receipts)}
+            aria-label="Export Archive as CSV"
+            title="Download CSV Spreadsheet"
+            className="px-2 py-1 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+          >
+            CSV
+          </button>
+          <button
+            onClick={() => exportToThermalText(receipts)}
+            aria-label="Export as ASCII Thermal Receipt Text"
+            title="Download ASCII Thermal Text"
+            className="px-2 py-1 text-xs font-semibold text-amber-400 hover:text-amber-300 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+          >
+            TXT
+          </button>
+        </div>
       </div>
 
       {/* The Physical Receipt Container */}

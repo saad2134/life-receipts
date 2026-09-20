@@ -12,6 +12,7 @@ import {
   FileText,
   Network,
   Clock,
+  Tag,
 } from 'lucide-react';
 import { sanitizeText } from '../services/security';
 
@@ -19,6 +20,7 @@ interface ReceiptCardProps {
   receipt: LifeReceipt;
   onSelectReceipt: (receipt: LifeReceipt) => void;
   onTraceThread: (receipt: LifeReceipt) => void;
+  onFilterByTag?: (tag: string) => void;
   isHighlighted?: boolean;
 }
 
@@ -26,6 +28,7 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({
   receipt,
   onSelectReceipt,
   onTraceThread,
+  onFilterByTag,
   isHighlighted = false,
 }) => {
   const getCategoryIcon = (category: string) => {
@@ -119,6 +122,33 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({
         <p className="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">
           {sanitizeText(receipt.description)}
         </p>
+
+        {/* Clickable Interactive Tags */}
+        {receipt.tags && receipt.tags.length > 0 && (
+          <div className="flex flex-wrap items-center gap-1.5 mt-2.5" aria-label="Receipt tags">
+            <Tag className="w-3 h-3 text-slate-500 shrink-0" />
+            {receipt.tags.slice(0, 4).map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onFilterByTag) {
+                    onFilterByTag(tag);
+                  }
+                }}
+                className="text-[10px] font-medium text-slate-300 bg-slate-800/80 hover:bg-amber-500/20 hover:text-amber-300 border border-slate-700/60 hover:border-amber-500/40 px-2 py-0.5 rounded-md transition-all cursor-pointer"
+                aria-label={`Filter by tag: ${tag}`}
+                title={`Filter receipts by "${tag}"`}
+              >
+                {tag}
+              </button>
+            ))}
+            {receipt.tags.length > 4 && (
+              <span className="text-[10px] text-slate-500 font-mono">+{receipt.tags.length - 4}</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Card Footer: Metadata, Amount, Mood, and Thread Trace */}
@@ -161,3 +191,4 @@ export const ReceiptCard: React.FC<ReceiptCardProps> = ({
     </article>
   );
 };
+

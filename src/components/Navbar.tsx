@@ -10,6 +10,8 @@ import {
   Keyboard,
   Sparkles,
   Footprints,
+  Download,
+  ChevronDown,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -18,6 +20,7 @@ interface NavbarProps {
   onOpenUploader: () => void;
   onOpenShortcuts: () => void;
   onPrintReceipt: () => void;
+  onExport?: (format: 'json' | 'csv' | 'thermal') => void;
   totalReceipts: number;
 }
 
@@ -27,8 +30,10 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenUploader,
   onOpenShortcuts,
   onPrintReceipt,
+  onExport,
   totalReceipts,
 }) => {
+  const [isExportOpen, setIsExportOpen] = React.useState(false);
   const navItems: { id: ViewMode; label: string; icon: React.ComponentType<{ className?: string }>; shortcut: string }[] = [
     { id: 'receipt-tape', label: 'Thermal Tape', icon: Receipt, shortcut: '1' },
     { id: 'bento-grid', label: 'Bento Grid', icon: LayoutGrid, shortcut: '2' },
@@ -111,6 +116,58 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Printer className="w-3.5 h-3.5 text-amber-400" />
             <span className="hidden sm:inline">Print Tape</span>
           </button>
+
+          {/* Export Dropdown Menu */}
+          {onExport && (
+            <div className="relative">
+              <button
+                onClick={() => setIsExportOpen((prev) => !prev)}
+                aria-label="Export dataset in multiple formats"
+                aria-expanded={isExportOpen}
+                title="Export data (JSON, CSV, Thermal TXT)"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 border border-slate-700/80 hover:border-cyan-500/50 text-slate-200 hover:text-cyan-400 transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="hidden sm:inline">Export</span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              {isExportOpen && (
+                <div className="absolute right-0 mt-2 w-44 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-1.5 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    onClick={() => {
+                      onExport('json');
+                      setIsExportOpen(false);
+                    }}
+                    className="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-left cursor-pointer"
+                  >
+                    <span>JSON Archive</span>
+                    <span className="text-[9px] font-mono text-cyan-400 font-bold">.json</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      onExport('csv');
+                      setIsExportOpen(false);
+                    }}
+                    className="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-left cursor-pointer"
+                  >
+                    <span>CSV Spreadsheet</span>
+                    <span className="text-[9px] font-mono text-emerald-400 font-bold">.csv</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      onExport('thermal');
+                      setIsExportOpen(false);
+                    }}
+                    className="flex items-center justify-between px-2.5 py-1.5 text-xs text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-colors text-left cursor-pointer"
+                  >
+                    <span>Thermal ASCII</span>
+                    <span className="text-[9px] font-mono text-amber-400 font-bold">.txt</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Dataset Switcher / Uploader */}
           <button

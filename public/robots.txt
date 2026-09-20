@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://your-life-in-receipts.vercel.app/sitemap.xml

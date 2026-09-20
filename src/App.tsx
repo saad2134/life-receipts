@@ -6,8 +6,8 @@ import {
 } from './data/lifeReceiptsData';
 import {
   filterAndSortReceipts,
-  FilterOptions,
 } from './services/correlationEngine';
+import type { FilterOptions } from './types/filter';
 import { Navbar } from './components/Navbar';
 import { StatsBanner } from './components/StatsBanner';
 import { FilterBar } from './components/FilterBar';
@@ -85,6 +85,12 @@ export function App() {
     const threadSet = new Set([targetReceipt.id, ...(targetReceipt.connectedReceiptIds || [])]);
     setHighlightedThreadReceiptIds(threadSet);
     setSelectedReceipt(targetReceipt);
+  }, []);
+
+  // Clickable tag filtering: sets search query to the selected tag
+  const handleFilterByTag = useCallback((tag: string) => {
+    setFilters((prev) => ({ ...prev, searchQuery: tag }));
+    setCurrentView('bento-grid');
   }, []);
 
   // Global Keyboard Navigation (1, 2, 3, 4, p, ?)
@@ -198,6 +204,7 @@ export function App() {
                         receipt={receipt}
                         onSelectReceipt={setSelectedReceipt}
                         onTraceThread={handleTraceThread}
+                        onFilterByTag={handleFilterByTag}
                         isHighlighted={highlightedThreadReceiptIds.has(receipt.id)}
                       />
                     ))}

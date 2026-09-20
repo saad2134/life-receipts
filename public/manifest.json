@@ -1,0 +1,19 @@
+{
+  "name": "LifeReceipts — Your Life, In Receipts",
+  "short_name": "LifeReceipts",
+  "description": "An interactive digital experience that transforms digital-life receipts into meaningful stories and discoverable patterns.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "any",
+  "categories": ["lifestyle", "entertainment", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧾%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

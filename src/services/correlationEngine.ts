@@ -1,17 +1,9 @@
-import { LifeReceipt, ReceiptCategory, MoodType, DetectedPattern, StoryChapter } from '../types/receipt';
+import { LifeReceipt, MoodType, DetectedPattern, StoryChapter } from '../types/receipt';
 import { INITIAL_CHAPTERS, INITIAL_PATTERNS } from '../data/lifeReceiptsData';
+import type { FilterOptions } from '../types/filter';
 
-export interface FilterOptions {
-  searchQuery: string;
-  category: ReceiptCategory | 'all';
-  mood: MoodType | 'all';
-  chapterId: string | 'all';
-  sortBy: 'date-desc' | 'date-asc' | 'amount-desc' | 'connections-desc';
-  minAmount?: number;
-  maxAmount?: number;
-  startDate?: string;
-  endDate?: string;
-}
+// Re-export FilterOptions for backward compatibility
+export type { FilterOptions } from '../types/filter';
 
 /**
  * Filter and sort life receipts based on multi-faceted criteria.
