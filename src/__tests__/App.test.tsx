@@ -37,6 +37,11 @@ describe('App Integration & End-to-End User Flow (FAIE Parameters 1, 3, 4, 5, 6)
     const chaptersTab = screen.getAllByRole('tab', { name: /Life Chapters/i })[0];
     fireEvent.click(chaptersTab);
     expect(await screen.findByText(/CHAPTER 1 OF/i)).toBeInTheDocument();
+
+    // Switch to Connection Detective (lazy loaded)
+    const detectiveTab = screen.getAllByRole('tab', { name: /Connection Detective/i })[0];
+    fireEvent.click(detectiveTab);
+    expect(await screen.findByText(/CONNECTION DETECTIVE MODE/i)).toBeInTheDocument();
   });
 
   it('filters receipts when typing in search bar in grid view', () => {

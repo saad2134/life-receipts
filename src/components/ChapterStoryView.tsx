@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { LifeReceipt } from '../types/receipt';
 import { synthesizeDynamicChapters } from '../services/correlationEngine';
 import { useReceiptAudio } from '../hooks/useReceiptAudio';
@@ -13,6 +13,7 @@ import {
   Pause,
   MapPin,
   Headphones,
+  Film,
 } from 'lucide-react';
 import { sanitizeText } from '../services/security';
 
@@ -37,7 +38,11 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
     stopNarration,
     toggleAmbient,
     toggleMute,
+    triggerReceiptSound,
   } = useReceiptAudio();
+
+  const [isPlayingReel, setIsPlayingReel] = useState(false);
+  const [activeReelIndex, setActiveReelIndex] = useState(0);
 
   const chapterReceipts = useMemo(() => {
     if (!chapter) return [];
@@ -47,6 +52,29 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
     }
     return receipts.filter((r) => r.chapterId === chapter.id);
   }, [receipts, chapter]);
+
+  // Documentary Reel Auto-Play Cycle
+  useEffect(() => {
+    if (!isPlayingReel || chapterReceipts.length === 0) return;
+
+    // Trigger initial printer stepper motor pulse
+    triggerReceiptSound('print');
+
+    const interval = setInterval(() => {
+      setActiveReelIndex((prev) => {
+        const next = (prev + 1) % chapterReceipts.length;
+        triggerReceiptSound('print');
+        return next;
+      });
+    }, 3200);
+
+    return () => clearInterval(interval);
+  }, [isPlayingReel, chapterReceipts, triggerReceiptSound]);
+
+  // Reset reel index when chapter changes
+  useEffect(() => {
+    setActiveReelIndex(0);
+  }, [activeChapterIndex]);
 
   const handleNext = () => {
     if (activeChapterIndex < chapters.length - 1) {
@@ -106,6 +134,23 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
 
         {/* Narrative & Multi-Sensory Audio Controls */}
         <div className="flex items-center gap-2 shrink-0">
+          {/* Auto-Play Documentary Reel */}
+          <button
+            onClick={() => setIsPlayingReel((prev) => !prev)}
+            aria-label={isPlayingReel ? 'Pause Documentary Reel' : 'Auto-Play Documentary Reel'}
+            title="Auto-play through this chapter's moments like a documentary reel"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+              isPlayingReel
+                ? 'bg-rose-600 text-white font-bold border-rose-500 shadow-lg shadow-rose-600/30'
+                : 'bg-slate-900 border-slate-700/80 text-rose-300 hover:bg-slate-800'
+            }`}
+          >
+            {isPlayingReel ? <Pause className="w-3.5 h-3.5" /> : <Film className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">
+              {isPlayingReel ? 'Pause Reel' : 'Auto-Play Reel'}
+            </span>
+          </button>
+
           <button
             onClick={() => playNarration(chapter.narrative)}
             aria-label={isNarrating ? 'Stop story narration' : 'Play spoken narration'}
@@ -237,17 +282,28 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {chapterReceipts.map((r) => (
-            <div
-              key={r.id}
-              onClick={() => onSelectReceipt(r)}
-              className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800/80 hover:border-amber-500/40 hover:-translate-y-0.5 transition-all cursor-pointer flex flex-col justify-between group"
-            >
-              <div>
-                <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
-                  <span className="capitalize font-semibold text-amber-400">{r.category}</span>
-                  <span className="font-mono text-[10px]">{r.displayDate}</span>
-                </div>
+          {chapterReceipts.map((r, rIdx) => {
+            const isReelActive = isPlayingReel && rIdx === activeReelIndex;
+            return (
+              <div
+                key={r.id}
+                onClick={() => onSelectReceipt(r)}
+                className={`p-4 rounded-2xl transition-all cursor-pointer flex flex-col justify-between group ${
+                  isReelActive
+                    ? 'bg-amber-500/10 border-2 border-amber-400 shadow-xl shadow-amber-500/20 scale-[1.02]'
+                    : 'bg-slate-900/70 border border-slate-800/80 hover:border-amber-500/40 hover:-translate-y-0.5'
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
+                    <span className="capitalize font-semibold text-amber-400">{r.category}</span>
+                    {isReelActive && (
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500 text-slate-950 animate-pulse">
+                        ON REEL
+                      </span>
+                    )}
+                    <span className="font-mono text-[10px]">{r.displayDate}</span>
+                  </div>
                 <h4 className="font-bold text-sm text-white group-hover:text-amber-300 transition-colors">
                   {r.title}
                 </h4>
@@ -273,7 +329,8 @@ export const ChapterStoryView: React.FC<ChapterStoryViewProps> = ({
                 )}
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       </div>
     </section>

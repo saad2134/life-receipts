@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import {
   playPaperTearSound,
+  playReceiptSound,
   startAmbientTone,
   stopAmbientTone,
   isAmbientRunning,
@@ -84,5 +85,19 @@ describe('Audio Service & Multi-Sensory Narration (FAIE Criterion 6)', () => {
         result.current.triggerTearSound();
       });
     }).not.toThrow();
+
+    // Trigger receipt click and print sounds
+    expect(() => {
+      act(() => {
+        result.current.triggerReceiptSound('click');
+        result.current.triggerReceiptSound('print');
+      });
+    }).not.toThrow();
+  });
+
+  it('synthesizes specialized receipt audio effects for click, print, and tear', () => {
+    expect(() => playReceiptSound('click')).not.toThrow();
+    expect(() => playReceiptSound('print')).not.toThrow();
+    expect(() => playReceiptSound('tear')).not.toThrow();
   });
 });

@@ -9,6 +9,7 @@ import {
   Upload,
   Keyboard,
   Sparkles,
+  Footprints,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -33,6 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'bento-grid', label: 'Bento Grid', icon: LayoutGrid, shortcut: '2' },
     { id: 'constellation', label: 'Constellation', icon: Network, shortcut: '3' },
     { id: 'chapters', label: 'Life Chapters', icon: BookOpen, shortcut: '4' },
+    { id: 'detective', label: 'Connection Detective', icon: Footprints, shortcut: '5' },
   ];
 
   return (

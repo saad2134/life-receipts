@@ -28,6 +28,9 @@ const ConstellationView = lazy(() =>
 const ChapterStoryView = lazy(() =>
   import('./components/ChapterStoryView').then((m) => ({ default: m.ChapterStoryView }))
 );
+const ConnectionDetectiveView = lazy(() =>
+  import('./components/ConnectionDetectiveView').then((m) => ({ default: m.ConnectionDetectiveView }))
+);
 
 function ViewLoadingSkeleton() {
   return (
@@ -96,6 +99,7 @@ export function App() {
       if (e.key === '2') setCurrentView('bento-grid');
       if (e.key === '3') setCurrentView('constellation');
       if (e.key === '4') setCurrentView('chapters');
+      if (e.key === '5') setCurrentView('detective');
       if (e.key.toLowerCase() === 'p') window.print();
       if (e.key === '?') setIsShortcutsOpen((prev) => !prev);
     };
@@ -227,6 +231,21 @@ export function App() {
                 tabIndex={0}
               >
                 <ChapterStoryView
+                  receipts={receipts}
+                  onSelectReceipt={setSelectedReceipt}
+                />
+              </section>
+            )}
+
+            {/* VIEW 5: Connection Detective Mode (Multi-Receipt Chain Investigation) */}
+            {currentView === 'detective' && (
+              <section
+                id="panel-detective"
+                role="tabpanel"
+                aria-labelledby="tab-detective"
+                tabIndex={0}
+              >
+                <ConnectionDetectiveView
                   receipts={receipts}
                   onSelectReceipt={setSelectedReceipt}
                 />

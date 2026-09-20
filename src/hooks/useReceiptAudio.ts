@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import {
   playPaperTearSound,
+  playReceiptSound,
   startAmbientTone,
   stopAmbientTone,
   isAmbientRunning,
@@ -29,6 +30,12 @@ export function useReceiptAudio() {
   const triggerTearSound = useCallback(() => {
     if (!isMuted) {
       playPaperTearSound();
+    }
+  }, [isMuted]);
+
+  const triggerReceiptSound = useCallback((type: 'click' | 'print' | 'tear') => {
+    if (!isMuted) {
+      playReceiptSound(type);
     }
   }, [isMuted]);
 
@@ -88,6 +95,7 @@ export function useReceiptAudio() {
     isMuted,
     isSpeechSupported: isSpeechSynthesisSupported(),
     triggerTearSound,
+    triggerReceiptSound,
     toggleAmbient,
     playNarration,
     stopNarration,

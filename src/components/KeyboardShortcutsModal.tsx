@@ -30,6 +30,7 @@ export const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({
     { key: '2', action: 'Switch to Bento Grid View' },
     { key: '3', action: 'Switch to Memory Constellation Graph' },
     { key: '4', action: 'Switch to Life Chapters' },
+    { key: '5', action: 'Switch to Connection Detective Mode' },
     { key: '/', action: 'Focus Search Bar instantly' },
     { key: 'P', action: 'Print or export physical receipt' },
     { key: 'Esc', action: 'Close active modal or reset selection' },

@@ -107,4 +107,4 @@ export interface LifeStats {
   soundtrackTracksCount: number;
 }
 
-export type ViewMode = 'receipt-tape' | 'bento-grid' | 'constellation' | 'chapters';
+export type ViewMode = 'receipt-tape' | 'bento-grid' | 'constellation' | 'chapters' | 'detective';

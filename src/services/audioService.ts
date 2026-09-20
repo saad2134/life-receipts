@@ -76,6 +76,68 @@ export function playPaperTearSound(): void {
 }
 
 /**
+ * Synthesizes dynamic audio cues for receipt interactions:
+ * - 'click': 880Hz -> 220Hz tactile click
+ * - 'print': 4 micro-stepper motor pulses (1400 + i*150 Hz triangle waves)
+ * - 'tear': authentic paper tear friction sound
+ */
+export function playReceiptSound(type: 'click' | 'print' | 'tear'): void {
+  if (type === 'tear') {
+    playPaperTearSound();
+    return;
+  }
+
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  try {
+    const now = ctx.currentTime;
+
+    if (type === 'click') {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.04);
+
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.04);
+    } else if (type === 'print') {
+      // 4 micro-stepper motor frequency pulses (1400 + i*150 Hz triangle waves)
+      for (let i = 0; i < 4; i++) {
+        const pulseTime = now + i * 0.045;
+        const pulseDuration = 0.032;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1400 + i * 150, pulseTime);
+        osc.frequency.exponentialRampToValueAtTime(1200 + i * 120, pulseTime + pulseDuration);
+
+        gain.gain.setValueAtTime(0.001, pulseTime);
+        gain.gain.linearRampToValueAtTime(0.12, pulseTime + 0.005);
+        gain.gain.exponentialRampToValueAtTime(0.001, pulseTime + pulseDuration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(pulseTime);
+        osc.stop(pulseTime + pulseDuration);
+      }
+    }
+  } catch {
+    // Autoplay policy restriction guard
+  }
+}
+
+/**
  * Starts a calming, warm 432Hz sine wave ambient frequency with harmonic warmth
  * to accompany reflective retrospective reading.
  */
